@@ -1,0 +1,37 @@
+version: '3.8'
+services:
+  php-apache:
+    build: ./php-apache
+    container_name: php-apache
+    ports:
+      - "8080:80"
+    volumes:
+      - ./app:/var/www/html
+    depends_on:
+      - mariadb
+
+  mariadb:
+    image: mariadb:10.11
+    container_name: mariadb
+    environment:
+      MARIADB_ROOT_PASSWORD: root
+      MARIADB_DATABASE: dw2f_ibenitez
+    ports:
+      - "3306:3306"
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
+      - mariadb_data:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: mariadb
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "8081:80"
+    depends_on:
+      - mariadb
+
+volumes:
+  mariadb_data:
